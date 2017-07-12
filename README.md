@@ -34,6 +34,9 @@ Tracks the commits in a [git](http://git-scm.com/) repository.
 * `paths`: *Optional.* If specified (as a list of glob patterns), only changes
   to the specified files will yield new versions from `check`.
 
+* `action`: *Optional.* If specified (as a value of [git log --diff-filter](https://git-scm.com/docs/git-log#git-log---diff-filterACDMRTUXB82308203)), only changes
+  to the specified action with files will yield new version from `check`.
+
 * `ignore_paths`: *Optional.* The inverse of `paths`; changes to the specified
   files are ignored.
 
