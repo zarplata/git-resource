@@ -27,6 +27,7 @@ tag_filter=$(jq -r '.source.tag_filter // ""' < $payload)
 git_config_payload=$(jq -r '.source.git_config // []' < $payload)
 ref=$(jq -r '.version.ref // ""' < $payload)
 skip_ci_disabled=$(jq -r '.source.disable_ci_skip // false' < $payload)
+action=$(jq -r '.source.action // ""' < $payload)
 
 configure_git_global "${git_config_payload}"
 
@@ -63,6 +64,12 @@ else
   paths_search="-- $paths $ignore_paths"
 fi
 
+if [ -z "$action" ]; then
+  action_search=""
+else
+  action_search="--diff-filter=$action"
+fi
+
 ci_skip=""
 if [ "$skip_ci_disabled" != "true" ]; then
   ci_skip="--grep \\[ci\\sskip\\] --grep \\[skip\\sci\\] --invert-grep"
@@ -79,7 +86,7 @@ if [ -n "$tag_filter" ]; then
 else
   {
     set -f
-    git log $ci_skip --format='%H' --first-parent $log_range $paths_search
+    git log $ci_skip --format='%H' --first-parent $log_range $action_search $paths_search
     set +f
   } | jq -R '.' | jq -s "map({ref: .})" >&3
 fi
